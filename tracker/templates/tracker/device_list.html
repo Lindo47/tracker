@@ -1,0 +1,96 @@
+{% extends 'tracker/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="card-title mb-0">➕ Добавить устройство</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="needs-validation">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ field.errors|striptags }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold mt-2">
+                        💾 Сохранить в базу
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if chart_exists %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white py-3">
+                <h5 class="card-title mb-0">📊 Аналитика данных (Pandas)</h5>
+            </div>
+            <div class="card-body text-center p-2">
+                <img src="{% static 'tracker/chart.png' %}?u={{ devices|length }}" alt="График аналитики" class="img-fluid rounded">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-dark">📋 Каталог и аналитика устройств</h2>
+            <span class="badge bg-primary fs-6">Всего в базе: {{ devices|length }}</span>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" class="ps-3">Бренд</th>
+                                <th scope="col">Название</th>
+                                <th scope="col">Состояние</th> <th scope="col">Базовая цена</th>
+                                <th scope="col">Выкуп</th>
+                                <th scope="col" class="text-center pe-3">Действие</th> </tr>
+                        </thead>
+                        <tbody>
+                            {% for device in devices %}
+                            <tr>
+                                <td class="ps-3 fw-bold text-secondary">{{ device.brand }}</td>
+                                <td>{{ device.name }}</td>
+                                <td>
+                                    <span class="badge bg-info text-dark px-2 py-1">
+                                        {{ device.condition.grade_name }} 
+                                        <small class="text-muted">({{ device.condition.price_modifier }})</small>
+                                    </span>
+                                </td>
+                                <td>{{ device.base_market_price }} руб.</td>
+                                <td class="fw-bold text-success">{{ device.estimated_price }} руб.</td>
+                                <td class="text-center pe-3">
+                                    <form action="{% url 'delete_device' device.id %}" method="POST" class="d-inline" onsubmit="return confirm('Вы уверены, что хотите удалить это устройство?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm px-3">🗑️ Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    Устройств пока нет. Заполните форму слева!
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
