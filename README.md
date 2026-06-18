@@ -21,7 +21,8 @@ Frontend: HTML5, Bootstrap 5
 
 Скриншоты интерфейса
 
-(З
+<img width="1380" height="881" alt="изображение" src="https://github.com/user-attachments/assets/5c28f756-7b87-463d-8a57-bc289f8e87e8" />
+
 ![Главная страница](tracker/static/tracker/chart.png) 
 График аналитики, сгенерированный с помощью Pandas и Matplotlib
 
